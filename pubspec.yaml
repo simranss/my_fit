@@ -1,5 +1,5 @@
 name: my_fit
-description: A new Flutter project.
+description: A generic companion mobile app for bluetooth smart watches.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -35,6 +35,12 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+
+  # state management
+  provider: ^6.0.5
+
+  # bluetooth
+  flutter_blue_plus:
 
 dev_dependencies:
   flutter_test:
