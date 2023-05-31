@@ -1,45 +1,89 @@
+import 'dart:async';
 import 'dart:collection';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:my_fit/classes/bluetooth_device.dart';
 
 class BluetoothModel extends ChangeNotifier {
-  FlutterBluePlus _flutterBlue = FlutterBluePlus.instance;
+  final _flutterReactiveBle = FlutterReactiveBle();
+  StreamSubscription? _subscription;
 
-  final List<BluetoothDevice> _devices = [];
+  final List<String> _deviceIds = [];
   UnmodifiableListView<BluetoothDevice> get devices =>
       UnmodifiableListView(_devices);
+  final List<BluetoothDevice> _devices = [];
 
   void startScanning() {
+    _deviceIds.clear();
     _devices.clear();
     notifyListeners();
-    _flutterBlue.startScan(timeout: const Duration(seconds: 25)).then((val) => {
-          print('devices found: ${_devices.length}'),
-          for (BluetoothDevice device in _devices)
-            {
-              print('device: ${device.name}'),
-            }
-        });
+    _subscription?.cancel();
+    _subscription = _flutterReactiveBle.scanForDevices(
+        withServices: [], scanMode: ScanMode.lowLatency).listen((device) {
+      //code for handling results
+      debugPrint('device: ${device.name} ${device.id}');
+      if (device.name.trim() != '' && !_deviceIds.contains(device.id)) {
+        debugPrint(
+            'deviceIds contains ${device.id}: ${_deviceIds.contains(device.id)}');
+        debugPrint('new device: ${device.name}');
+        _deviceIds.add(device.id);
+        _devices.add(BluetoothDevice(device, 'unknown'));
+        notifyListeners();
+      }
+    }, onError: (err) {
+      //code for handling error
+      debugPrint('error: ${err.toString()}');
+    });
+  }
 
-    // Listen to scan results
-    _flutterBlue.scanResults.listen((results) {
-      // do something with scan results
-      for (ScanResult r in results) {
-        if (!_devices.contains(r.device) && r.device.name.trim() != '') {
-          debugPrint('${r.device.name} found! rssi: ${r.rssi}');
-          _devices.add(r.device);
+  Future<void> stopScanning() async {
+    await _subscription?.cancel();
+    _subscription = null;
+  }
+
+  void connect(DiscoveredDevice device) {
+    _flutterReactiveBle
+        .connectToDevice(
+      id: device.id,
+      connectionTimeout: const Duration(seconds: 10),
+    )
+        .listen((event) {
+      DeviceConnectionState status = event.connectionState;
+      int index = _deviceIds.indexOf(device.id);
+      switch (status) {
+        case DeviceConnectionState.connected:
+          _devices[index].status = 'Connected';
           notifyListeners();
-        }
+          break;
+        case DeviceConnectionState.connecting:
+          _devices[index].status = 'Connecting';
+          notifyListeners();
+          break;
+        case DeviceConnectionState.disconnected:
+          _devices[index].status = 'Disconnected';
+          notifyListeners();
+          break;
+        case DeviceConnectionState.disconnecting:
+          _devices[index].status = 'Disconnecting';
+          notifyListeners();
+          break;
+        default:
+          _devices[index].status = 'Unknown';
+          notifyListeners();
       }
     });
   }
 
-  void connect(BluetoothDevice device) {
-    device.connect();
+  Future<List<DiscoveredService>> discoverServices(String deviceId) {
+    return _flutterReactiveBle.discoverServices(deviceId);
   }
 
-  void stopScanning() {
-    _flutterBlue.stopScan();
+  Future<List<int>> getCharacteristicData(QualifiedCharacteristic c) {
+    return _flutterReactiveBle.readCharacteristic(c);
+  }
+
+  Stream<List<int>> subscribeToCharacteristic(QualifiedCharacteristic c) {
+    return _flutterReactiveBle.subscribeToCharacteristic(c);
   }
 }

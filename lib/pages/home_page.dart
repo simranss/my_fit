@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:my_fit/models/bluetooth_model.dart';
-import 'package:my_fit/pages/DashboardPage.dart';
+import 'package:my_fit/pages/dashboard_page.dart';
+import 'package:my_fit/utils/navigation_utils.dart';
 import 'package:provider/provider.dart';
+
+import '../classes/bluetooth_device.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -20,24 +22,27 @@ class HomePage extends StatelessWidget {
             children: [
               Expanded(
                 child: Consumer<BluetoothModel>(
-                  builder: (ctx, bluetoothModel, child) => ListView.builder(
-                      itemCount: bluetoothModel.devices.length,
-                      itemBuilder: (context, index) =>
-                          getListItem(bluetoothModel.devices[index])),
+                  builder: (_, bluetoothModel, __) => ListView.builder(
+                    itemCount: bluetoothModel.devices.length,
+                    itemBuilder: (context, index) => getListItem(
+                        bluetoothModel.devices[index], context, bluetoothModel),
+                  ),
                 ),
               ),
               ElevatedButton(
-                  onPressed: () {
-                    Provider.of<BluetoothModel>(context, listen: false)
-                        .startScanning();
-                  },
-                  child: const Text('Start Scanning')),
+                onPressed: () {
+                  Provider.of<BluetoothModel>(context, listen: false)
+                      .startScanning();
+                },
+                child: const Text('Start Scanning'),
+              ),
               ElevatedButton(
-                  onPressed: () {
-                    Provider.of<BluetoothModel>(context, listen: false)
-                        .stopScanning();
-                  },
-                  child: const Text('Stop Scanning')),
+                onPressed: () {
+                  Provider.of<BluetoothModel>(context, listen: false)
+                      .stopScanning();
+                },
+                child: const Text('Stop Scanning'),
+              ),
             ],
           ),
         ),
@@ -45,32 +50,22 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget getListItem(BluetoothDevice device) {
-    final name = device.name;
-    String status = '';
-    return StreamBuilder<BluetoothDeviceState>(
-      stream: device.state,
-      builder: (context, snapshot) {
-        var event = snapshot.data;
-        if (event == BluetoothDeviceState.connected) {
-        status = 'connected';
-        } else if (event == BluetoothDeviceState.connecting) {
-          status = 'connecting';
-        } else if (event == BluetoothDeviceState.disconnected) {
-          status = 'disconnected';
-        } else if (event == BluetoothDeviceState.disconnecting) {
-          status = 'disconnecting';
-        } else {
-          status = '';
-        }
-        return ListTile(
-          title: Text(name),
-          trailing: Text(status),
-          onTap: () => {
-            Provider.of<BluetoothModel>(context, listen: false).connect(device),
-            Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardPage(device: device,)))
-          },
-        );
+  Widget getListItem(
+      BluetoothDevice device, BuildContext context, BluetoothModel model) {
+    final name = device.device.name;
+    String status = device.status;
+    return ListTile(
+      title: Text(name),
+      subtitle: Text(status),
+      onTap: () => {
+        if (status.toLowerCase().trim() != 'connected')
+          {
+            Provider.of<BluetoothModel>(context, listen: false).stopScanning(),
+            Provider.of<BluetoothModel>(context, listen: false)
+                .connect(device.device),
+          }
+        else
+          NavigationUtils.push(context, DashboardPage(device: device.device))
       },
     );
   }

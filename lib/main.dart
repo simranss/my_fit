@@ -4,7 +4,12 @@ import 'package:my_fit/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider<BluetoothModel>(
+      create: (_) => BluetoothModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,10 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider<BluetoothModel>(
-        create: (_) => BluetoothModel(),
-        child: const HomePage(),
-      ),
+      home: const HomePage(),
     );
   }
 }

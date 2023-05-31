@@ -1,4 +1,4 @@
-package com.example.my_fit
+package com.sharai.my_fit
 
 import io.flutter.embedding.android.FlutterActivity
 
