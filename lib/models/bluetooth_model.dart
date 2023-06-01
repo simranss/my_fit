@@ -42,15 +42,22 @@ class BluetoothModel extends ChangeNotifier {
     _subscription = null;
   }
 
-  void connect(DiscoveredDevice device) {
+  Stream<ConnectionStateUpdate> connect(String deviceId) {
+    return _flutterReactiveBle.connectToDevice(
+      id: deviceId,
+      connectionTimeout: const Duration(seconds: 10),
+    );
+  }
+
+  void connectAndUpdate(String deviceId) {
     _flutterReactiveBle
         .connectToDevice(
-      id: device.id,
+      id: deviceId,
       connectionTimeout: const Duration(seconds: 10),
     )
         .listen((event) {
       DeviceConnectionState status = event.connectionState;
-      int index = _deviceIds.indexOf(device.id);
+      int index = _deviceIds.indexOf(deviceId);
       switch (status) {
         case DeviceConnectionState.connected:
           _devices[index].status = 'Connected';

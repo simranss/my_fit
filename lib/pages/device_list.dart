@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:my_fit/classes/bluetooth_device.dart';
+import 'package:my_fit/constants/shared_prefs_strings.dart';
 import 'package:my_fit/models/bluetooth_model.dart';
 import 'package:my_fit/pages/dashboard_page.dart';
 import 'package:my_fit/utils/navigation_utils.dart';
+import 'package:my_fit/utils/shared_prefs_utils.dart';
 import 'package:provider/provider.dart';
 
-import '../classes/bluetooth_device.dart';
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class DeviceListPage extends StatelessWidget {
+  const DeviceListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +58,21 @@ class HomePage extends StatelessWidget {
     return ListTile(
       title: Text(name),
       subtitle: Text(status),
-      onTap: () => {
+      onTap: () async => {
         if (status.toLowerCase().trim() != 'connected')
           {
             Provider.of<BluetoothModel>(context, listen: false).stopScanning(),
             Provider.of<BluetoothModel>(context, listen: false)
-                .connect(device.device),
+                .connectAndUpdate(device.device.id),
           }
         else
-          NavigationUtils.push(context, DashboardPage(device: device.device))
+          {
+            await SharedPrefsUtils.setString(
+                SharedPrefsStrings.DEVICE_ID_KEY, device.device.id),
+            await SharedPrefsUtils.setString(
+                SharedPrefsStrings.DEVICE_NAME_KEY, device.device.name),
+            NavigationUtils.pushReplacement(context, DashboardPage(deviceId: device.device.id)),
+          }
       },
     );
   }

@@ -42,6 +42,9 @@ dependencies:
   # bluetooth
   flutter_reactive_ble: ^5.0.3
 
+  # temp local storage
+  shared_preferences: ^2.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
