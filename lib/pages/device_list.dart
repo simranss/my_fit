@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_fit/classes/bluetooth_device.dart';
 import 'package:my_fit/constants/shared_prefs_strings.dart';
 import 'package:my_fit/models/bluetooth_model.dart';
+import 'package:my_fit/models/dashboard_page_model.dart';
 import 'package:my_fit/pages/dashboard_page.dart';
 import 'package:my_fit/utils/navigation_utils.dart';
 import 'package:my_fit/utils/shared_prefs_utils.dart';
@@ -71,7 +72,15 @@ class DeviceListPage extends StatelessWidget {
                 SharedPrefsStrings.DEVICE_ID_KEY, device.device.id),
             await SharedPrefsUtils.setString(
                 SharedPrefsStrings.DEVICE_NAME_KEY, device.device.name),
-            NavigationUtils.pushReplacement(context, DashboardPage(deviceId: device.device.id)),
+            NavigationUtils.pushReplacement(
+                context,
+                ChangeNotifierProxyProvider<BluetoothModel, DashboardPageModel>(
+                    create: (context) => DashboardPageModel(
+                        Provider.of<BluetoothModel>(context, listen: false)),
+                    update: (_, bluetoothModel, prevDashboardPageModel) =>
+                        DashboardPageModel(bluetoothModel),
+                    child: DashboardPage(deviceId: device.device.id))),
+            //NavigationUtils.pushReplacement(context, DashboardPage(deviceId: device.device.id)),
           }
       },
     );
