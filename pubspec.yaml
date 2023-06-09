@@ -48,6 +48,16 @@ dependencies:
   # handling assets
   flutter_svg: ^2.0.6
 
+  # launcher icon
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/my_fit.png"
+  min_sdk_android: 21
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
