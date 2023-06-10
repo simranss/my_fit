@@ -52,20 +52,26 @@ class HeartRateComponent extends StatelessWidget {
             color: Colors.grey.shade800,
           ),
           Expanded(
-            child: StreamBuilder(
-              stream: _heartRateStream,
-              builder: (context, snapshot) {
-                var values = snapshot.data;
-                debugPrint(values.toString());
-                var hr = BluetoothUtils.getHR(values ?? []);
-                debugPrint('hr: $hr');
-                return Center(
-                  child: Text(
-                    (hr != -1) ? hr.toString() : '--',
-                    style: const TextStyle(fontSize: 18, color: Colors.black),
-                  ),
-                );
-              },
+            child: Center(
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: StreamBuilder(
+                  stream: _heartRateStream,
+                  builder: (context, snapshot) {
+                    var values = snapshot.data;
+                    debugPrint(values.toString());
+                    var hr = BluetoothUtils.getHR(values ?? []);
+                    debugPrint('hr: $hr');
+                    return Center(
+                      child: Text(
+                        (hr != -1) ? hr.toString() : '--',
+                        style: const TextStyle(fontSize: 18, color: Colors.black),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ],

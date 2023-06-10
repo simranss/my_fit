@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_fit/constants/shared_prefs_strings.dart';
 import 'package:my_fit/models/dashboard_page_model.dart';
+import 'package:my_fit/utils/shared_prefs_utils.dart';
 import 'package:provider/provider.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -15,7 +17,20 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: FutureBuilder(
+          future:
+              SharedPrefsUtils.getString(SharedPrefsStrings.DEVICE_NAME_KEY),
+          builder: (context, snapshot) => Text(
+              snapshot.hasData ? snapshot.data ?? 'Dashboard' : 'Dashboard'),
+        ),
+        actions: [
+          Consumer<DashboardPageModel>(
+            builder: (_, model, __) => Padding(
+              padding: const EdgeInsets.only(top: 16.0, right: 12),
+              child: Text('${model.batteryLevel}%', style: const TextStyle(fontSize: 16),),
+            ),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),

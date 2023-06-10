@@ -7,4 +7,5 @@ class SharedPrefsStrings {
   static const String SLEEP_KEY = 'sleep';
   static const String CALORIE_KEY = 'calories';
   static const String STEPS_KEY = 'steps';
+  static const String GOAL_STEPS_KEY = 'goal_steps';
 }

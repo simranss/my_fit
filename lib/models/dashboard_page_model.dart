@@ -3,7 +3,11 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:my_fit/components/heart_rate_component.dart';
+import 'package:my_fit/components/status_data_component.dart';
+import 'package:my_fit/constants/shared_prefs_strings.dart';
 import 'package:my_fit/models/bluetooth_model.dart';
+import 'package:my_fit/utils/bluetooth_utils.dart';
+import 'package:my_fit/utils/shared_prefs_utils.dart';
 
 class DashboardPageModel extends ChangeNotifier {
   DashboardPageModel(this._bluetoothModel);
@@ -15,78 +19,99 @@ class DashboardPageModel extends ChangeNotifier {
 
   String? _deviceId;
   String get deviceId => _deviceId ?? '';
+  String batteryLevel = '';
 
   void init(String deviceIdTemp) async {
     debugPrint('inside init');
     _deviceId = deviceIdTemp;
     debugPrint('model deviceId: $deviceIdTemp');
-    //notifyListeners();
     var services = await _bluetoothModel.discoverServices(deviceIdTemp);
     debugPrint('services: ${services.length}');
     for (var service in services) {
       var serviceUuid = service.serviceId;
+      var serviceIdStr = serviceUuid.toString().trim().toLowerCase();
       var characteristicIds = service.characteristicIds;
-      debugPrint('characteristics: ${characteristicIds.length.toString()}');
-      for (var characteristicId in characteristicIds) {
-        debugPrint('before handle characteristics');
-        String characteristicIdStr = characteristicId.toString().trim();
-        if (characteristicIdStr.contains('00002a37')) {
-          // heart rate
-          _printStmt('heart rate');
-          final characteristic = QualifiedCharacteristic(
-            serviceId: serviceUuid,
-            characteristicId: characteristicId,
-            deviceId: deviceId,
-          );
-          _components.add(HeartRateComponent(
-              _bluetoothModel.subscribeToCharacteristic(characteristic)));
-          notifyListeners();
+      if (serviceIdStr.contains('183e')) {
+        // physical activity monitor service
+        debugPrint('found physical activity monitor service');
+      } else if (serviceIdStr.contains('180d')) {
+        // heart rate service
+        debugPrint('found heart rate service');
+        for (var characteristicId in characteristicIds) {
+          String characteristicIdStr = characteristicId.toString().trim();
+          if (characteristicIdStr.contains('00002a37')) {
+            // heart rate measurement
+            final characteristic = QualifiedCharacteristic(
+              serviceId: serviceUuid,
+              characteristicId: characteristicId,
+              deviceId: deviceId,
+            );
+            _components.add(HeartRateComponent(
+                _bluetoothModel.subscribeToCharacteristic(characteristic)));
+            print('components hr: $_components');
+          }
         }
-        if (characteristicIdStr.contains('00002b40')) {
-          // steps - Step Counter Activity Summary Data
-          _printStmt('steps - Step Counter Activity Summary Data');
+      } else if (serviceIdStr.contains('180f')) {
+        // battery service
+        debugPrint('found battery service');
+        for (var characteristicId in characteristicIds) {
+          String characteristicIdStr = characteristicId.toString().trim();
+          if (characteristicIdStr.contains('00002a19')) {
+            // battery level
+            final characteristic = QualifiedCharacteristic(
+              serviceId: serviceUuid,
+              characteristicId: characteristicId,
+              deviceId: deviceId,
+            );
+            try {
+              List<int> values =
+                  await _bluetoothModel.getCharacteristicData(characteristic);
+              debugPrint('battery level data: ${values.toString()}');
+              int batteryLevelInt = BluetoothUtils.getBatteryLevel(values);
+              debugPrint('battery level: $batteryLevelInt');
+              batteryLevel = batteryLevelInt.toString();
+            } catch (err) {
+              debugPrint('battery level error');
+              debugPrint(err.toString());
+            }
+          }
         }
-        if (characteristicIdStr.contains('000027ba')) {
-          // steps - step (per minute)
-          _printStmt('steps - step (per minute)');
+      } else if (serviceIdStr.contains('fee0')) {
+        // mi band
+        debugPrint('found mi band fee0 service');
+        for (var characteristicId in characteristicIds) {
+          String characteristicIdStr = characteristicId.toString().trim();
+          if (characteristicIdStr.contains('00000007')) {
+            // steps
+            final characteristic = QualifiedCharacteristic(
+              serviceId: serviceUuid,
+              characteristicId: characteristicId,
+              deviceId: deviceId,
+            );
+            try {
+              List<int> values =
+                  await _bluetoothModel.getCharacteristicData(characteristic);
+              debugPrint('steps data: ${values.toString()}');
+              var data = BluetoothUtils.handleSteps(values);
+              int goalSteps = await SharedPrefsUtils.getInt(
+                      SharedPrefsStrings.GOAL_STEPS_KEY) ??
+                  5000;
+              _components.insert(0, StatusDataComponent(data, goalSteps));
+              print('components steps: $_components');
+            } catch (err) {
+              debugPrint('steps error');
+              debugPrint(err.toString());
+            }
+          }
         }
-        if (characteristicIdStr.contains('00002acf')) {
-          // steps - Step Climber Data
-          _printStmt('steps - Step Climber Data');
-        }
-        if (characteristicIdStr.contains('00002b41')) {
-          // sleep - Sleep Activity Instantaneous Data
-          _printStmt('sleep - Sleep Activity Instantaneous Data');
-        }
-        if (characteristicIdStr.contains('00002b42')) {
-          // sleep - Sleep Activity Summary Data
-          _printStmt('sleep - Sleep Activity Summary Data');
-        }
-        if (characteristicIdStr.contains('000027a9')) {
-          // energy - gram calorie
-          _printStmt('energy - gram calorie');
-        }
-        if (characteristicIdStr.contains('00002725')) {
-          // energy - joule
-          _printStmt('energy - joule');
-        }
-        if (characteristicIdStr.contains('000027aa')) {
-          // energy - kilogram calorie
-          _printStmt('energy - kilogram calorie');
-        }
-        if (characteristicIdStr.contains('000027ab')) {
-          // energy - kilowatt hour
-          _printStmt('energy - kilowatt hour');
-        }
-        if (characteristicIdStr.contains('0000274a')) {
-          // energy density - joule per cubic metre
-          _printStmt('energy density - joule per cubic metre');
-        }
+      } else if (serviceIdStr.contains('fee1')) {
+        // mi band
+        debugPrint('found mi band fee1 service');
+      } else {
+        debugPrint('other service: $serviceIdStr');
       }
     }
-  }
-
-  void _printStmt(String message) {
-    debugPrint('charActivity: $message');
+    print(_components);
+    notifyListeners();
   }
 }
