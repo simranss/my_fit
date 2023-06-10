@@ -51,6 +51,10 @@ dependencies:
   # launcher icon
   flutter_launcher_icons: "^0.13.1"
 
+  # firebase
+  firebase_core: ^2.13.1
+  firebase_auth: ^4.6.2
+
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
