@@ -29,6 +29,14 @@ class BluetoothUtils {
     }
   }
 
+  static int getSubscriptionBatteryLevel(List<int> values) {
+    if (values.length > 1) {
+      return values[1];
+    } else {
+      return -1;
+    }
+  }
+
   static Map<String, int> handleSteps(List<int> values) {
     Map<String, int> data = {};
     if (values.length >= 10) {

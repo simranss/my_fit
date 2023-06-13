@@ -20,6 +20,7 @@ class DashboardPageModel extends ChangeNotifier {
   String? _deviceId;
   String get deviceId => _deviceId ?? '';
   String batteryLevel = '';
+  Stream<List<int>>? batteryStream;
 
   void init(String deviceIdTemp) async {
     debugPrint('inside init');
@@ -89,19 +90,31 @@ class DashboardPageModel extends ChangeNotifier {
               deviceId: deviceId,
             );
             try {
-              List<int> values =
-                  await _bluetoothModel.getCharacteristicData(characteristic);
-              debugPrint('steps data: ${values.toString()}');
-              var data = BluetoothUtils.handleSteps(values);
               int goalSteps = await SharedPrefsUtils.getInt(
                       SharedPrefsStrings.GOAL_STEPS_KEY) ??
                   5000;
-              _components.insert(0, StatusDataComponent(data, goalSteps));
+              _components.insert(
+                0,
+                StatusDataComponent(
+                  goalSteps: goalSteps,
+                  statusStream:
+                      _bluetoothModel.subscribeToCharacteristic(characteristic),
+                ),
+              );
               print('components steps: $_components');
             } catch (err) {
               debugPrint('steps error');
               debugPrint(err.toString());
             }
+          } else if (characteristicIdStr.contains('00000006')) {
+            // battery
+            final characteristic = QualifiedCharacteristic(
+              serviceId: serviceUuid,
+              characteristicId: characteristicId,
+              deviceId: deviceId,
+            );
+            batteryStream =
+                _bluetoothModel.subscribeToCharacteristic(characteristic);
           }
         }
       } else if (serviceIdStr.contains('fee1')) {

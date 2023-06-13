@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_fit/utils/bluetooth_utils.dart';
 
 class StatusDataComponent extends StatelessWidget {
-  const StatusDataComponent(this._statusData, this._goalSteps, {super.key});
-  final Map<String, int> _statusData;
-  final int _goalSteps;
+  const StatusDataComponent({super.key, required this.statusStream, required this.goalSteps,});
+  final Stream<List<int>> statusStream;
+  final int goalSteps;
 
   @override
   Widget build(BuildContext context) {
@@ -32,51 +33,60 @@ class StatusDataComponent extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Center(
-              child: SizedBox(
-                width: 100,
-                height: 100,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: _getCircularProgressIndicator(),
+      child: StreamBuilder<List<int>>(
+          stream: statusStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List<int> values = snapshot.data ?? [];
+              var statusData = BluetoothUtils.handleSteps(values);
+              return Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 100,
+                              height: 100,
+                              child: _getCircularProgressIndicator(statusData),
+                            ),
+                            Text(statusData.containsKey('steps')
+                                ? statusData['steps'].toString()
+                                : '--')
+                          ],
+                        ),
+                      ),
                     ),
-                    Text(_statusData.containsKey('steps')
-                        ? _statusData['steps'].toString()
-                        : '--')
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 80,
-            color: Colors.grey.shade800,
-          ),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _caloriesWidget(),
-                _distWidget(),
-              ],
-            ),
-          ),
-        ],
-      ),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 80,
+                    color: Colors.grey.shade800,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _caloriesWidget(statusData),
+                        _distWidget(statusData),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+            return const CircularProgressIndicator();
+          }),
     );
   }
 
-  Widget _distWidget() {
+  Widget _distWidget(Map<String, int> statusData) {
     int meters =
-        _statusData.containsKey('meters') ? _statusData['meters'] ?? 0 : 0;
+        statusData.containsKey('meters') ? statusData['meters'] ?? 0 : 0;
     if (meters > 1000) {
       if (meters % 1000 == 0) {
         meters ~/= 1000;
@@ -89,17 +99,17 @@ class StatusDataComponent extends StatelessWidget {
     return Text('Distance: ${meters}m');
   }
 
-  Widget _caloriesWidget() {
-    int cal = _statusData.containsKey('cal') ? _statusData['cal'] ?? 0 : 0;
+  Widget _caloriesWidget(Map<String, int> statusData) {
+    int cal = statusData.containsKey('cal') ? statusData['cal'] ?? 0 : 0;
     return Text('Calories: ${cal}kcal');
   }
 
-  Widget _getCircularProgressIndicator() {
+  Widget _getCircularProgressIndicator(Map<String, int> statusData) {
     int steps =
-        _statusData.containsKey('steps') ? _statusData['steps'] ?? 0 : 0;
+        statusData.containsKey('steps') ? statusData['steps'] ?? 0 : 0;
     double value = 0;
-    if (steps <= _goalSteps) {
-      value = steps / _goalSteps;
+    if (steps <= goalSteps) {
+      value = steps / goalSteps;
     } else {
       value = 1;
     }
