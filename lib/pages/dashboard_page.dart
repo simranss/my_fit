@@ -42,7 +42,7 @@ class DashboardPage extends StatelessWidget {
                         if (snapshot.hasData) {
                           var batteryData = snapshot.data ?? [];
                           var batteryLevel =
-                              BluetoothUtils.getSubscriptionBatteryLevel(
+                              BluetoothUtils.getMiSubscriptionBatteryLevel(
                                   batteryData);
                           return Text(
                             '$batteryLevel%',

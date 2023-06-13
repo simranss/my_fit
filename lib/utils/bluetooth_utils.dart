@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:typed_data';
 
 class BluetoothUtils {
   static int getHR(List<int> values) {
@@ -29,7 +28,7 @@ class BluetoothUtils {
     }
   }
 
-  static int getSubscriptionBatteryLevel(List<int> values) {
+  static int getMiSubscriptionBatteryLevel(List<int> values) {
     if (values.length > 1) {
       return values[1];
     } else {
@@ -46,17 +45,13 @@ class BluetoothUtils {
     }
     if (values.length >= 3) {
       // steps
-      final bytes = Uint8List.fromList(values.sublist(1, 3));
-      final byteData = ByteData.sublistView(bytes);
-      int steps = byteData.getInt16(0, Endian.little);
+      int steps = values[1] + (values[2] << 8);
       debugPrint('steps: $steps');
       data.putIfAbsent('steps', () => steps);
     }
     if (values.length >= 7) {
       // meters
-      final bytes = Uint8List.fromList(values.sublist(5, 7));
-      final byteData = ByteData.sublistView(bytes);
-      int meters = byteData.getInt16(0, Endian.little);
+      int meters = values[5] + (values[6] << 8);
       debugPrint('meters: $meters');
       data.putIfAbsent('meters', () => meters);
     }
