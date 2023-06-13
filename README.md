@@ -1,16 +1,15 @@
 # my_fit
 
-A new Flutter project.
+A Flutter application that works as a companion app for bluetooth watches.
+Connect a bluetooth watch and see the data on your phone.
 
-## Getting Started
+As of now, it supports the following data:
+1. Heart Rate
+2. Battery level
+3. Steps (MiBand only)
 
-This project is a starting point for a Flutter application.
+[Note: This app is under development and may contain bugs.]
 
-A few resources to get you started if this is your first Flutter project:
+[Refer to DocumentationToReadData.md to know, how is the data being extracted.]
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Any help would be welcomed.
