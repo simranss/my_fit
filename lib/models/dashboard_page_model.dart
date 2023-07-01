@@ -35,6 +35,35 @@ class DashboardPageModel extends ChangeNotifier {
       if (serviceIdStr.contains('183e')) {
         // physical activity monitor service
         debugPrint('found physical activity monitor service');
+        for (var characteristicId in characteristicIds) {
+          String characteristicIdStr = characteristicId.toString().trim();
+          if (characteristicIdStr.contains('00002b40')) {
+            // steps
+            final characteristic = QualifiedCharacteristic(
+              serviceId: serviceUuid,
+              characteristicId: characteristicId,
+              deviceId: deviceId,
+            );
+            try {
+              int goalSteps = await SharedPrefsUtils.getInt(
+                      SharedPrefsStrings.GOAL_STEPS_KEY) ??
+                  5000;
+              _components.insert(
+                0,
+                StatusDataComponent(
+                  isMi: false,
+                  goalSteps: goalSteps,
+                  statusStream:
+                      _bluetoothModel.subscribeToCharacteristic(characteristic),
+                ),
+              );
+              print('components steps: $_components');
+            } catch (err) {
+              debugPrint('steps error');
+              debugPrint(err.toString());
+            }
+          }
+        }
       } else if (serviceIdStr.contains('180d')) {
         // heart rate service
         debugPrint('found heart rate service');
@@ -96,6 +125,7 @@ class DashboardPageModel extends ChangeNotifier {
               _components.insert(
                 0,
                 StatusDataComponent(
+                  isMi: true,
                   goalSteps: goalSteps,
                   statusStream:
                       _bluetoothModel.subscribeToCharacteristic(characteristic),

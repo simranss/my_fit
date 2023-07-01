@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 class BluetoothUtils {
@@ -36,7 +38,7 @@ class BluetoothUtils {
     }
   }
 
-  static Map<String, int> handleSteps(List<int> values) {
+  static Map<String, int> handleMiSteps(List<int> values) {
     Map<String, int> data = {};
     if (values.length >= 10) {
       // calories
@@ -54,6 +56,36 @@ class BluetoothUtils {
       int meters = values[5] + (values[6] << 8);
       debugPrint('meters: $meters');
       data.putIfAbsent('meters', () => meters);
+    }
+    return data;
+  }
+
+  static Map<String, int> getSteps(List<int> values) {
+    Map<String, int> data = {};
+    if (values.length > 1) {
+      var binaryFlags = values[1].toRadixString(2);
+      var flagNormalWalkPresent = binaryFlags[binaryFlags.length - 1];
+      var flagDistancePresent = binaryFlags[binaryFlags.length - 4];
+      if (flagNormalWalkPresent == '1') {
+        // steps present
+        if (values.length >= 17) {
+          final bytes = Uint8List.fromList([...values.sublist(14, 17), 0]);
+          final byteData = ByteData.sublistView(bytes);
+          int steps = byteData.getInt32(0, Endian.little);
+
+          data.putIfAbsent('steps', () => steps);
+        }
+      }
+      if (flagDistancePresent == '1') {
+        // distance present
+        if (values.length >= 26) {
+          final bytes = Uint8List.fromList([...values.sublist(23, 26), 0]);
+          final byteData = ByteData.sublistView(bytes);
+          int distance = byteData.getInt32(0, Endian.little);
+
+          data.putIfAbsent('meters', () => distance);
+        }
+      }
     }
     return data;
   }

@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:my_fit/utils/bluetooth_utils.dart';
 
 class StatusDataComponent extends StatelessWidget {
-  const StatusDataComponent({super.key, required this.statusStream, required this.goalSteps,});
+  const StatusDataComponent({
+    super.key,
+    required this.statusStream,
+    required this.goalSteps,
+    required this.isMi,
+  });
   final Stream<List<int>> statusStream;
   final int goalSteps;
+  final bool isMi;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,12 @@ class StatusDataComponent extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<int> values = snapshot.data ?? [];
-              var statusData = BluetoothUtils.handleSteps(values);
+              var statusData = <String, int>{};
+              if (isMi) {
+                statusData = BluetoothUtils.handleMiSteps(values);
+              } else {
+                statusData = BluetoothUtils.getSteps(values);
+              }
               return Row(
                 children: [
                   Expanded(
@@ -79,6 +90,20 @@ class StatusDataComponent extends StatelessWidget {
                 ],
               );
             }
+            if (snapshot.hasError) {
+              return const SizedBox(
+                height: 150,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Text('Something Went Wrong'),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
             return const CircularProgressIndicator();
           }),
     );
@@ -105,8 +130,7 @@ class StatusDataComponent extends StatelessWidget {
   }
 
   Widget _getCircularProgressIndicator(Map<String, int> statusData) {
-    int steps =
-        statusData.containsKey('steps') ? statusData['steps'] ?? 0 : 0;
+    int steps = statusData.containsKey('steps') ? statusData['steps'] ?? 0 : 0;
     double value = 0;
     if (steps <= goalSteps) {
       value = steps / goalSteps;
