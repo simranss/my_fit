@@ -69,9 +69,7 @@ class BluetoothUtils {
       if (flagNormalWalkPresent == '1') {
         // steps present
         if (values.length >= 17) {
-          final bytes = Uint8List.fromList([...values.sublist(14, 17), 0]);
-          final byteData = ByteData.sublistView(bytes);
-          int steps = byteData.getInt32(0, Endian.little);
+          int steps = values[14] + (values[15] << 8) + (values[16] << 16);
 
           data.putIfAbsent('steps', () => steps);
         }
@@ -79,14 +77,16 @@ class BluetoothUtils {
       if (flagDistancePresent == '1') {
         // distance present
         if (values.length >= 26) {
-          final bytes = Uint8List.fromList([...values.sublist(23, 26), 0]);
-          final byteData = ByteData.sublistView(bytes);
-          int distance = byteData.getInt32(0, Endian.little);
+          int distance = values[23] + (values[24] << 8) + (values[25] << 16);
 
           data.putIfAbsent('meters', () => distance);
         }
       }
     }
     return data;
+  }
+
+  static Map<String, int> getSleepData(List<int> list) {
+    return {};
   }
 }
