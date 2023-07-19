@@ -49,9 +49,9 @@ class DashboardPage extends StatelessWidget {
                             style: const TextStyle(fontSize: 16),
                           );
                         }
-                        return const Text(
-                          '--',
-                          style: TextStyle(fontSize: 16),
+                        return Text(
+                          '${model.batteryLevel}%',
+                          style: const TextStyle(fontSize: 16),
                         );
                       })
                   : Text(
