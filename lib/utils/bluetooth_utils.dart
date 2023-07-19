@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:my_fit/utils/date_time_utils.dart';
 
 class BluetoothUtils {
   static int getHR(List<int> values) {
@@ -86,7 +85,39 @@ class BluetoothUtils {
     return data;
   }
 
-  static Map<String, int> getSleepData(List<int> list) {
-    return {};
+  static Map<String, dynamic> getSleepData(List<int> values, bool summaryData) {
+    Map<String, dynamic> data = {};
+    if (summaryData) {
+      // sleep summary data
+      if (values.length >= 19) {
+        // total sleep time
+        int totalSleepTime =
+            values[16] + (values[17] << 8) + (values[18] << 16);
+        data.putIfAbsent(
+            'total_sleep', () => DateTimeUtils.secondsToTime(totalSleepTime));
+      }
+      if (values.length >= 22) {
+        // total bed time
+        int totalWakeTime = values[16] + (values[17] << 8) + (values[18] << 16);
+        data.putIfAbsent(
+            'total_wake', () => DateTimeUtils.secondsToTime(totalWakeTime));
+      }
+    } else {
+      // sleep instantaneous data
+      if (values.length > 2) {
+        int flags = values[1] + (values[2] << 8);
+        var binaryFlags = flags.toRadixString(2);
+        if (binaryFlags[binaryFlags.length - 4] == '1') {
+          if (values.length >= 27) {
+            int sleepStage =
+                values[24] + (values[25] << 8) + (values[26] << 16);
+            var sleepStageBits = sleepStage.toRadixString(2);
+            bool isAwake = sleepStageBits[sleepStageBits.length - 1] == '1';
+            data.putIfAbsent('awake', () => isAwake);
+          }
+        }
+      }
+    }
+    return data;
   }
 }

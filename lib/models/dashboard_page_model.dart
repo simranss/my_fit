@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:my_fit/components/heart_rate_component.dart';
+import 'package:my_fit/components/sleep_component.dart';
 import 'package:my_fit/components/status_data_component.dart';
 import 'package:my_fit/constants/shared_prefs_strings.dart';
 import 'package:my_fit/models/bluetooth_model.dart';
@@ -62,6 +63,28 @@ class DashboardPageModel extends ChangeNotifier {
               debugPrint('steps error');
               debugPrint(err.toString());
             }
+          } else if (characteristicIdStr.contains('00002b41')) {
+            // sleep instantaneous data
+            final characteristic = QualifiedCharacteristic(
+              serviceId: serviceUuid,
+              characteristicId: characteristicId,
+              deviceId: deviceId,
+            );
+            _components.add(SleepComponent(
+              _bluetoothModel.subscribeToCharacteristic(characteristic),
+              isSummaryData: false,
+            ));
+          } else if (characteristicIdStr.contains('00002b42')) {
+            // sleep summary data
+            final characteristic = QualifiedCharacteristic(
+              serviceId: serviceUuid,
+              characteristicId: characteristicId,
+              deviceId: deviceId,
+            );
+            _components.add(SleepComponent(
+              _bluetoothModel.subscribeToCharacteristic(characteristic),
+              isSummaryData: true,
+            ));
           }
         }
       } else if (serviceIdStr.contains('180d')) {
