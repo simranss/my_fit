@@ -40,72 +40,85 @@ class StatusDataComponent extends StatelessWidget {
         ],
       ),
       child: StreamBuilder<List<int>>(
-          stream: statusStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              List<int> values = snapshot.data ?? [];
-              var statusData = <String, int>{};
-              if (isMi) {
-                statusData = BluetoothUtils.handleMiSteps(values);
-              } else {
-                statusData = BluetoothUtils.getSteps(values);
-              }
-              return Row(
+        stream: statusStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<int> values = snapshot.data ?? [];
+            var statusData = <String, int>{};
+            if (isMi) {
+              statusData = BluetoothUtils.handleMiSteps(values);
+            } else {
+              statusData = BluetoothUtils.getSteps(values);
+            }
+            return Row(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: _getCircularProgressIndicator(statusData),
+                          ),
+                          Text(statusData.containsKey('steps')
+                              ? statusData['steps'].toString()
+                              : '--')
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 80,
+                  color: Colors.grey.shade800,
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _caloriesWidget(statusData),
+                      _distWidget(statusData),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
+          if (snapshot.hasError) {
+            return const SizedBox(
+              height: 150,
+              child: Row(
                 children: [
                   Expanded(
                     child: Center(
-                      child: SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              height: 100,
-                              child: _getCircularProgressIndicator(statusData),
-                            ),
-                            Text(statusData.containsKey('steps')
-                                ? statusData['steps'].toString()
-                                : '--')
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 1,
-                    height: 80,
-                    color: Colors.grey.shade800,
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _caloriesWidget(statusData),
-                        _distWidget(statusData),
-                      ],
+                      child: Text('Something Went Wrong'),
                     ),
                   ),
                 ],
-              );
-            }
-            if (snapshot.hasError) {
-              return const SizedBox(
-                height: 150,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: Text('Something Went Wrong'),
-                      ),
-                    ),
-                  ],
+              ),
+            );
+          }
+          return const Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-              );
-            }
-            return const CircularProgressIndicator();
-          }),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
