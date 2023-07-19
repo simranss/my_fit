@@ -1,0 +1,44 @@
+**Privacy Policy for My Fit App**
+
+Effective Date: 19th Jul 2023
+
+Thank you for using our My Fit App ("App"). This Privacy Policy is designed to help you understand how we collect, use, and safeguard your personal information while using the App. Your privacy is important to us, and we are committed to protecting your data and ensuring transparency in our practices.
+
+1. **Information We Collect:**
+   When you use the App, we may collect the following types of information:
+   - Personal Information: This includes data provided by you during registration, such as your name, email address, age, gender, and other optional profile information.
+   - Health & Fitness Data: The App may sync with compatible smartwatches and fitness trackers to collect data related to your physical activities, heart rate, sleep patterns, and other health metrics. This information is used to provide you with insights and track your progress towards your fitness goals.
+
+2. **How We Use Your Information:**
+   We use the collected information for the following purposes:
+   - To provide the App's functionality and services to you, including displaying health and fitness data from your smartwatch.
+   - To analyze and aggregate user data to improve the App's performance, features, and user experience.
+   - To send you relevant updates, personalized recommendations, and notifications related to your health and fitness goals.
+   - To respond to your inquiries, provide customer support, and troubleshoot any issues you may encounter.
+   - To comply with legal obligations and protect our rights and interests.
+
+3. **Data Security:**
+   We prioritize the security of your data and have implemented appropriate measures to safeguard it from unauthorized access, disclosure, or alteration. These measures include encryption, secure data storage, and access controls. However, it's essential to understand that no internet or electronic storage method is entirely secure, and while we strive to protect your data, we cannot guarantee absolute security.
+
+4. **Data Sharing and Third-Party Services:**
+   We do not sell, rent, or lease your personal information to third parties. However, we may share your data in the following circumstances:
+   - With service providers and partners who assist us in delivering the App's features and services. These entities are required to comply with our privacy standards.
+   - If required by law, regulation, legal process, or government request, we may disclose your data.
+   - In case of a merger, acquisition, or sale of assets, your information may be transferred to the acquiring entity, subject to the same privacy obligations.
+
+5. **Data Retention:**
+   We retain your personal information for as long as necessary to fulfill the purposes outlined in this Privacy Policy or as required by law. If you choose to delete your account, we will promptly remove your personal information from active use; however, some data may be retained for backup, legal, or legitimate business purposes.
+
+6. **Your Choices:**
+   You have the right to access, update, correct, or delete your personal information from the App. You can also opt-out of receiving non-essential communications from us. However, certain data, such as health and fitness data, may be necessary to provide the App's core functionalities.
+
+7. **Children's Privacy:**
+   The App is not intended for use by individuals under the age of 18. We do not knowingly collect personal information from children. If you are a parent or guardian and believe your child has provided us with personal information, please contact us, and we will take appropriate action to remove such data from our records.
+
+8. **Changes to the Privacy Policy:**
+   We may update this Privacy Policy from time to time to reflect changes in our practices or for legal reasons. We will notify you of any material changes by posting the updated policy on our website or through the App's notification system.
+
+9. **Contact Us:**
+   If you have any questions, concerns, or requests regarding this Privacy Policy or the App's data practices, please contact us at simran.s.sharma00@gmail.com.
+
+By using the My Fit App, you consent to the collection, use, and sharing of your information as described in this Privacy Policy.
