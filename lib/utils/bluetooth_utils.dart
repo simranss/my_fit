@@ -98,7 +98,7 @@ class BluetoothUtils {
       }
       if (values.length >= 22) {
         // total bed time
-        int totalWakeTime = values[16] + (values[17] << 8) + (values[18] << 16);
+        int totalWakeTime = values[19] + (values[20] << 8) + (values[21] << 16);
         data.putIfAbsent(
             'total_wake', () => DateTimeUtils.secondsToTime(totalWakeTime));
       }
