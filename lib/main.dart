@@ -33,11 +33,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: showPage(),
+      home: _showPage(),
     );
   }
 
-  Widget showPage() {
+  Widget _showPage() {
     return FutureBuilder(
       future: SharedPrefsUtils.getString(SharedPrefsStrings.DEVICE_ID_KEY),
       builder: (context, futureSnapshot) {
@@ -49,20 +49,26 @@ class MyApp extends StatelessWidget {
             stream: Provider.of<BluetoothModel>(context, listen: false)
                 .connect(deviceId),
             builder: (_, streamSnapshot) {
-              ConnectionStateUpdate? connectionStateUpdate =
-                  streamSnapshot.data;
-              DeviceConnectionState state =
-                  connectionStateUpdate?.connectionState ??
-                      DeviceConnectionState.disconnected;
-              if (state == DeviceConnectionState.connected) {
-                return ChangeNotifierProxyProvider<BluetoothModel, DashboardPageModel>(
-                  create: (context) => DashboardPageModel(Provider.of<BluetoothModel>(context, listen: false)),
-                  update: (_, bluetoothModel, prevDashboardPageModel) => DashboardPageModel(bluetoothModel),
-                  child: DashboardPage(deviceId: deviceId),
-                );
-              } else {
-                return const DeviceListPage();
+              if (streamSnapshot.hasData) {
+                ConnectionStateUpdate? connectionStateUpdate =
+                    streamSnapshot.data;
+                DeviceConnectionState state =
+                    connectionStateUpdate?.connectionState ??
+                        DeviceConnectionState.disconnected;
+                if (state == DeviceConnectionState.connected) {
+                  return ChangeNotifierProxyProvider<BluetoothModel,
+                      DashboardPageModel>(
+                    create: (context) => DashboardPageModel(
+                        Provider.of<BluetoothModel>(context, listen: false)),
+                    update: (_, bluetoothModel, prevDashboardPageModel) =>
+                        DashboardPageModel(bluetoothModel),
+                    child: DashboardPage(deviceId: deviceId),
+                  );
+                } else {
+                  return const DeviceListPage();
+                }
               }
+              return const DeviceListPage();
             },
           );
         }

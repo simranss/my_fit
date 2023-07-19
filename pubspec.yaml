@@ -48,6 +48,9 @@ dependencies:
   # handling assets
   flutter_svg: ^2.0.6
 
+  # permissions
+  permission_handler: ^10.4.3
+
   # launcher icon
   flutter_launcher_icons: "^0.13.1"
 

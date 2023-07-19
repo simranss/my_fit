@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:my_fit/classes/bluetooth_device.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class BluetoothModel extends ChangeNotifier {
   final _flutterReactiveBle = FlutterReactiveBle();
@@ -14,7 +15,15 @@ class BluetoothModel extends ChangeNotifier {
       UnmodifiableListView(_devices);
   final List<BluetoothDevice> _devices = [];
 
-  void startScanning() {
+  void startScanning() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.location,
+      Permission.bluetooth,
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan,
+    ].request();
+    print(statuses);
+
     _deviceIds.clear();
     _devices.clear();
     notifyListeners();
