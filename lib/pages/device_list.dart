@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:my_fit/classes/bluetooth_device.dart';
 import 'package:my_fit/constants/shared_prefs_strings.dart';
 import 'package:my_fit/models/bluetooth_model.dart';
-import 'package:my_fit/models/dashboard_page_model.dart';
-import 'package:my_fit/pages/dashboard_page.dart';
+import 'package:my_fit/models/home.dart';
+import 'package:my_fit/pages/home.dart';
 import 'package:my_fit/utils/navigation_utils.dart';
 import 'package:my_fit/utils/shared_prefs_utils.dart';
 import 'package:provider/provider.dart';
@@ -59,29 +59,25 @@ class DeviceListPage extends StatelessWidget {
     return ListTile(
       title: Text(name),
       subtitle: Text(status),
-      onTap: () async => {
-        if (status.toLowerCase().trim() != 'connected')
-          {
-            Provider.of<BluetoothModel>(context, listen: false).stopScanning(),
-            Provider.of<BluetoothModel>(context, listen: false)
-                .connectAndUpdate(device.device.id),
-          }
-        else
-          {
-            await SharedPrefsUtils.setString(
-                SharedPrefsStrings.DEVICE_ID_KEY, device.device.id),
-            await SharedPrefsUtils.setString(
-                SharedPrefsStrings.DEVICE_NAME_KEY, device.device.name),
+      onTap: () async {
+        if (status.toLowerCase().trim() != 'connected') {
+          model.stopScanning();
+          model.connectAndUpdate(device.device.id);
+        } else {
+          await SharedPrefsUtils.setString(
+              SharedPrefsStrings.DEVICE_ID_KEY, device.device.id);
+          await SharedPrefsUtils.setString(
+              SharedPrefsStrings.DEVICE_NAME_KEY, device.device.name);
+          if (context.mounted) {
             NavigationUtils.pushReplacement(
-                context,
-                ChangeNotifierProxyProvider<BluetoothModel, DashboardPageModel>(
-                    create: (context) => DashboardPageModel(
-                        Provider.of<BluetoothModel>(context, listen: false)),
-                    update: (_, bluetoothModel, prevDashboardPageModel) =>
-                        DashboardPageModel(bluetoothModel),
-                    child: DashboardPage(deviceId: device.device.id))),
-            //NavigationUtils.pushReplacement(context, DashboardPage(deviceId: device.device.id)),
+              context,
+              ChangeNotifierProvider<HomeModel>(
+                create: (context) => HomeModel(),
+                child: const HomePage(),
+              ),
+            );
           }
+        }
       },
     );
   }

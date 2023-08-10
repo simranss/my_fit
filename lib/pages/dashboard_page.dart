@@ -1,5 +1,6 @@
 // flutter packages
 import 'package:flutter/material.dart';
+import 'package:my_fit/models/bluetooth_model.dart';
 import 'package:provider/provider.dart';
 
 // constants
@@ -13,14 +14,18 @@ import 'package:my_fit/utils/bluetooth_utils.dart';
 import 'package:my_fit/utils/shared_prefs_utils.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key, required this.deviceId});
-  final String deviceId;
+  const DashboardPage({super.key});
+  //final String deviceId;
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    final dashboardModel = context.read<DashboardPageModel>();
+    final bluetoothModel = context.read<BluetoothModel>();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var deviceId =
+          await SharedPrefsUtils.getString(SharedPrefsStrings.DEVICE_ID_KEY);
       debugPrint('deviceId: $deviceId');
-      Provider.of<DashboardPageModel>(context, listen: false).init(deviceId);
+      dashboardModel.init(bluetoothModel, deviceId!);
     });
     return Scaffold(
       backgroundColor: Colors.grey.shade200,

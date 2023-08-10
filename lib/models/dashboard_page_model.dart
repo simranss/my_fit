@@ -11,9 +11,9 @@ import 'package:my_fit/utils/bluetooth_utils.dart';
 import 'package:my_fit/utils/shared_prefs_utils.dart';
 
 class DashboardPageModel extends ChangeNotifier {
-  DashboardPageModel(this._bluetoothModel);
+  //DashboardPageModel(this.bluetoothModel);
 
-  final BluetoothModel _bluetoothModel;
+  //final BluetoothModel bluetoothModel;
   final List<Widget> _components = [];
   UnmodifiableListView<Widget> get components =>
       UnmodifiableListView(_components);
@@ -23,11 +23,11 @@ class DashboardPageModel extends ChangeNotifier {
   String batteryLevel = '';
   Stream<List<int>>? batteryStream;
 
-  void init(String deviceIdTemp) async {
+  void init(BluetoothModel bluetoothModel, String deviceIdTemp) async {
     debugPrint('inside init');
     _deviceId = deviceIdTemp;
     debugPrint('model deviceId: $deviceIdTemp');
-    var services = await _bluetoothModel.discoverServices(deviceIdTemp);
+    var services = await bluetoothModel.discoverServices(deviceIdTemp);
     debugPrint('services: ${services.length}');
     for (var service in services) {
       var serviceUuid = service.serviceId;
@@ -55,7 +55,7 @@ class DashboardPageModel extends ChangeNotifier {
                   isMi: false,
                   goalSteps: goalSteps,
                   statusStream:
-                      _bluetoothModel.subscribeToCharacteristic(characteristic),
+                      bluetoothModel.subscribeToCharacteristic(characteristic),
                 ),
               );
               print('components steps: $_components');
@@ -71,7 +71,7 @@ class DashboardPageModel extends ChangeNotifier {
               deviceId: deviceId,
             );
             _components.add(SleepComponent(
-              _bluetoothModel.subscribeToCharacteristic(characteristic),
+              bluetoothModel.subscribeToCharacteristic(characteristic),
               isSummaryData: false,
             ));
           } else if (characteristicIdStr.contains('00002b42')) {
@@ -82,7 +82,7 @@ class DashboardPageModel extends ChangeNotifier {
               deviceId: deviceId,
             );
             _components.add(SleepComponent(
-              _bluetoothModel.subscribeToCharacteristic(characteristic),
+              bluetoothModel.subscribeToCharacteristic(characteristic),
               isSummaryData: true,
             ));
           }
@@ -100,7 +100,7 @@ class DashboardPageModel extends ChangeNotifier {
               deviceId: deviceId,
             );
             _components.add(HeartRateComponent(
-                _bluetoothModel.subscribeToCharacteristic(characteristic)));
+                bluetoothModel.subscribeToCharacteristic(characteristic)));
             print('components hr: $_components');
           }
         }
@@ -118,7 +118,7 @@ class DashboardPageModel extends ChangeNotifier {
             );
             try {
               List<int> values =
-                  await _bluetoothModel.getCharacteristicData(characteristic);
+                  await bluetoothModel.getCharacteristicData(characteristic);
               debugPrint('battery level data: ${values.toString()}');
               int batteryLevelInt = BluetoothUtils.getBatteryLevel(values);
               debugPrint('battery level: $batteryLevelInt');
@@ -151,7 +151,7 @@ class DashboardPageModel extends ChangeNotifier {
                   isMi: true,
                   goalSteps: goalSteps,
                   statusStream:
-                      _bluetoothModel.subscribeToCharacteristic(characteristic),
+                      bluetoothModel.subscribeToCharacteristic(characteristic),
                 ),
               );
               print('components steps: $_components');
@@ -167,7 +167,7 @@ class DashboardPageModel extends ChangeNotifier {
               deviceId: deviceId,
             );
             batteryStream =
-                _bluetoothModel.subscribeToCharacteristic(characteristic);
+                bluetoothModel.subscribeToCharacteristic(characteristic);
           }
         }
       } else if (serviceIdStr.contains('fee1')) {
