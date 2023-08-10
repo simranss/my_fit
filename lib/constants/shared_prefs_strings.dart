@@ -3,6 +3,7 @@
 class SharedPrefsStrings {
   static const String DEVICE_ID_KEY = 'device_id';
   static const String DEVICE_NAME_KEY = 'device_name';
+  static const String USER_NAME = 'user_name';
   static const String HR_KEY = 'hr';
   static const String SLEEP_KEY = 'sleep';
   static const String CALORIE_KEY = 'calories';

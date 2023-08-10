@@ -84,4 +84,10 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.android.material:material:1.9.0'
+
+    //  BoM for Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
+    // firebase auth
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:20.6.0")
 }
