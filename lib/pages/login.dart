@@ -23,6 +23,7 @@ class LoginPage extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
+              const SizedBox(height: 20),
               InkWell(
                 onTap: () {
                   // google login
@@ -30,7 +31,7 @@ class LoginPage extends StatelessWidget {
                   loginModel.signInWithGoogle();
                 },
                 child: SizedBox(
-                  width: 53,
+                  width: 40,
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: SvgPicture.asset(
