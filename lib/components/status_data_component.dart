@@ -7,10 +7,12 @@ class StatusDataComponent extends StatelessWidget {
     required this.statusStream,
     required this.goalSteps,
     required this.isMi,
+    this.miReadData,
   });
   final Stream<List<int>> statusStream;
   final int goalSteps;
   final bool isMi;
+  final List<int>? miReadData;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +104,49 @@ class StatusDataComponent extends StatelessWidget {
                   ),
                 ],
               ),
+            );
+          }
+          if (isMi && miReadData != null) {
+            var statusData = <String, int>{};
+            statusData = BluetoothUtils.handleMiSteps(miReadData!);
+            return Row(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: _getCircularProgressIndicator(statusData),
+                          ),
+                          Text(statusData.containsKey('steps')
+                              ? statusData['steps'].toString()
+                              : '--')
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 80,
+                  color: Colors.grey.shade800,
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _caloriesWidget(statusData),
+                      _distWidget(statusData),
+                    ],
+                  ),
+                ),
+              ],
             );
           }
           return const Row(

@@ -145,6 +145,9 @@ class DashboardPageModel extends ChangeNotifier {
               int goalSteps = await SharedPrefsUtils.getInt(
                       SharedPrefsStrings.GOAL_STEPS_KEY) ??
                   5000;
+
+              var miReadData =
+                  await bluetoothModel.getCharacteristicData(characteristic);
               _components.insert(
                 0,
                 StatusDataComponent(
@@ -152,6 +155,7 @@ class DashboardPageModel extends ChangeNotifier {
                   goalSteps: goalSteps,
                   statusStream:
                       bluetoothModel.subscribeToCharacteristic(characteristic),
+                  miReadData: miReadData,
                 ),
               );
               print('components steps: $_components');
