@@ -20,6 +20,7 @@ class SettingsPage extends StatelessWidget {
             children: [
               Container(
                 color: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Row(
                   children: [
                     const SizedBox(width: 20),
@@ -69,7 +70,7 @@ class SettingsPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               Container(
                 color: Colors.white,
                 child: ListView(
