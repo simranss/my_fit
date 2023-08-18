@@ -1,6 +1,5 @@
 // flutter packages
 import 'package:flutter/material.dart';
-import 'package:my_fit/models/bluetooth_model.dart';
 import 'package:provider/provider.dart';
 
 // constants
@@ -8,6 +7,7 @@ import 'package:my_fit/constants/shared_prefs_strings.dart';
 
 // models
 import 'package:my_fit/models/dashboard_page_model.dart';
+import 'package:my_fit/models/bluetooth_model.dart';
 
 // utils
 import 'package:my_fit/utils/bluetooth_utils.dart';
@@ -15,7 +15,6 @@ import 'package:my_fit/utils/shared_prefs_utils.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
-  //final String deviceId;
 
   @override
   Widget build(BuildContext context) {

@@ -2,18 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserModel extends ChangeNotifier {
-  User? user;
+  User? _user;
 
-  setUser(User? val) {
-    user = val;
+  void setUser(User? val) {
+    _user = val;
     notifyListeners();
   }
 
-  getUser() {
-    return user;
+  User? getUser() {
+    return _user;
   }
 
-  subscribeToUserChanges() {
+  Stream<User?> subscribeToUserChanges() {
     return FirebaseAuth.instance.userChanges();
   }
 }
