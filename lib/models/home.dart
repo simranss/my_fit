@@ -14,4 +14,9 @@ class HomeModel extends ChangeNotifier {
     ),
     const SettingsPage(),
   ];
+
+  void setCurrentIndex(int val) {
+    currentIndex = val;
+    notifyListeners();
+  }
 }

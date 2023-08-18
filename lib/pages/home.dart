@@ -16,6 +16,7 @@ class HomePage extends StatelessWidget {
         ),
         bottomNavigationBar: Selector<HomeModel, int>(
           builder: (_, index, __) => BottomNavigationBar(
+            onTap: (val) => homeModel.setCurrentIndex(val),
             type: BottomNavigationBarType.fixed,
             currentIndex: index,
             items: const [
