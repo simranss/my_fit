@@ -25,9 +25,9 @@ class HomePage extends StatelessWidget {
                 tooltip: 'Dashboard',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person_rounded),
-                label: 'Profile',
-                tooltip: 'Profile',
+                icon: Icon(Icons.settings_rounded),
+                label: 'Settings',
+                tooltip: 'Settings',
               ),
             ],
           ),
